@@ -11,7 +11,7 @@ namespace CAN_Simulator
 {
     public partial class Form1 : Form
     {
-        Can device = new Can(0);
+        Can device = new Can(1);
         public Form1()
         {
             InitializeComponent();
@@ -25,28 +25,6 @@ namespace CAN_Simulator
         {
             
             
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            
-                CanMessage[] frames = device.ReadAll() ;
-                foreach(var mes in frames)
-                {
-                    string bytes="";
-                    foreach(var bt in mes.Data)
-                    {
-                        bytes+=bt.ToString()+", ";
-                    }
-                    textBox1.Text += mes.Id + " | " + bytes+"\t\t";
-                }
-            
-            
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            textBox1.Text = "";
         }
     }
 }
