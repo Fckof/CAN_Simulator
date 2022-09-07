@@ -29,14 +29,15 @@
         private void InitializeComponent()
         {
             this.panel2 = new System.Windows.Forms.Panel();
-            this.button1 = new System.Windows.Forms.Button();
-            this.checkBox2 = new System.Windows.Forms.CheckBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.checkBoxStateErr2 = new System.Windows.Forms.CheckBox();
+            this.checkBoxStateErr = new System.Windows.Forms.CheckBox();
+            this.checkBoxStateOk = new System.Windows.Forms.CheckBox();
             this.label2 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.trackBar1 = new System.Windows.Forms.TrackBar();
             this.panel8 = new System.Windows.Forms.Panel();
+            this.button2 = new System.Windows.Forms.Button();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             this.panel8.SuspendLayout();
@@ -45,9 +46,10 @@
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.panel2.Controls.Add(this.button1);
-            this.panel2.Controls.Add(this.checkBox2);
-            this.panel2.Controls.Add(this.checkBox1);
+            this.panel2.Controls.Add(this.button2);
+            this.panel2.Controls.Add(this.checkBoxStateErr2);
+            this.panel2.Controls.Add(this.checkBoxStateErr);
+            this.panel2.Controls.Add(this.checkBoxStateOk);
             this.panel2.Controls.Add(this.label2);
             this.panel2.Controls.Add(this.textBox1);
             this.panel2.Controls.Add(this.label1);
@@ -57,42 +59,41 @@
             this.panel2.Size = new System.Drawing.Size(126, 676);
             this.panel2.TabIndex = 1;
             // 
-            // button1
+            // checkBoxStateErr2
             // 
-            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.button1.Location = new System.Drawing.Point(21, 427);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(81, 36);
-            this.button1.TabIndex = 6;
-            this.button1.Text = "ShowData";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.checkBoxStateErr2.AutoSize = true;
+            this.checkBoxStateErr2.Location = new System.Drawing.Point(19, 413);
+            this.checkBoxStateErr2.Name = "checkBoxStateErr2";
+            this.checkBoxStateErr2.Size = new System.Drawing.Size(104, 17);
+            this.checkBoxStateErr2.TabIndex = 9;
+            this.checkBoxStateErr2.Text = "НеисправноУП";
+            this.checkBoxStateErr2.UseVisualStyleBackColor = true;
+            this.checkBoxStateErr2.Click += new System.EventHandler(this.CheckBoxStateManager);
             // 
-            // checkBox2
+            // checkBoxStateErr
             // 
-            this.checkBox2.AutoSize = true;
-            this.checkBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.checkBox2.Location = new System.Drawing.Point(20, 389);
-            this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(87, 20);
-            this.checkBox2.TabIndex = 5;
-            this.checkBox2.Text = "Откл. пит";
-            this.checkBox2.UseVisualStyleBackColor = true;
-            this.checkBox2.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
+            this.checkBoxStateErr.AutoSize = true;
+            this.checkBoxStateErr.Location = new System.Drawing.Point(19, 390);
+            this.checkBoxStateErr.Name = "checkBoxStateErr";
+            this.checkBoxStateErr.Size = new System.Drawing.Size(88, 17);
+            this.checkBoxStateErr.TabIndex = 8;
+            this.checkBoxStateErr.Text = "Неисправно";
+            this.checkBoxStateErr.UseVisualStyleBackColor = true;
+            this.checkBoxStateErr.Click += new System.EventHandler(this.CheckBoxStateManager);
             // 
-            // checkBox1
+            // checkBoxStateOk
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Checked = true;
-            this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.checkBox1.Location = new System.Drawing.Point(18, 363);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(91, 20);
-            this.checkBox1.TabIndex = 4;
-            this.checkBox1.Text = "Исправно";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            this.checkBoxStateOk.AutoSize = true;
+            this.checkBoxStateOk.Checked = true;
+            this.checkBoxStateOk.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxStateOk.Enabled = false;
+            this.checkBoxStateOk.Location = new System.Drawing.Point(19, 367);
+            this.checkBoxStateOk.Name = "checkBoxStateOk";
+            this.checkBoxStateOk.Size = new System.Drawing.Size(76, 17);
+            this.checkBoxStateOk.TabIndex = 7;
+            this.checkBoxStateOk.Text = "Исправно";
+            this.checkBoxStateOk.UseVisualStyleBackColor = true;
+            this.checkBoxStateOk.Click += new System.EventHandler(this.CheckBoxStateManager);
             // 
             // label2
             // 
@@ -134,7 +135,6 @@
             this.trackBar1.Size = new System.Drawing.Size(45, 280);
             this.trackBar1.TabIndex = 0;
             this.trackBar1.TickStyle = System.Windows.Forms.TickStyle.Both;
-            this.trackBar1.Value = 600;
             this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll);
             // 
             // panel8
@@ -144,6 +144,17 @@
             this.panel8.Name = "panel8";
             this.panel8.Size = new System.Drawing.Size(1204, 679);
             this.panel8.TabIndex = 4;
+            // 
+            // button2
+            // 
+            this.button2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.button2.Location = new System.Drawing.Point(3, 484);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(120, 36);
+            this.button2.TabIndex = 10;
+            this.button2.Text = "ShowMessage";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // Form1
             // 
@@ -170,9 +181,10 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.CheckBox checkBox2;
-        private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.CheckBox checkBoxStateErr2;
+        private System.Windows.Forms.CheckBox checkBoxStateErr;
+        private System.Windows.Forms.CheckBox checkBoxStateOk;
+        private System.Windows.Forms.Button button2;
     }
 }
 
