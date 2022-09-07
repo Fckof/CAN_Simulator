@@ -26,8 +26,6 @@ namespace CAN_Simulator
         /// <summary>
         /// Инициализация объекта
         /// </summary>
-        /// <param name="position"></param>
-        /// <param name="id"></param>
         public void Init(ushort positionValue, UInt32 id, StateCode code)
         {
             _id = id;
@@ -37,7 +35,7 @@ namespace CAN_Simulator
         }
         public string ShowMessage(CanMessage msg)
         {
-            string msgStr = "RawData:\nID: " + _id + "| Pos: " + _workinPartPosition + "| FTime:" + _fallTime + "| State: " + _state + "|\n\nMessage:\n";
+            string msgStr = "RawData:\nID: " + _id + "| Pos: " + _workinPartPosition + "| FTime:" + _fallTime + "| State: " + _state + "|\n\nMessage 0x180:\n";
                msgStr += "ID: " + msg.Id + " | Flag: " + msg.Flag + " | Size: " + msg.Size + " | \n";
             msgStr += "Bytes: \n";
             foreach(var bytes in msg.Data){
@@ -50,6 +48,20 @@ namespace CAN_Simulator
         {
             CanMessage message = new CanMessage();
             message.Id = Convert.ToUInt32(0x180) + _id;
+            var posBytes = BitConverter.GetBytes(_workinPartPosition);
+            var ftimeBytes = BitConverter.GetBytes(_fallTime);
+            var codeBytes = BitConverter.GetBytes(_state);
+            IEnumerable<byte> bytes = posBytes.Concat(ftimeBytes).Concat(codeBytes);
+            message.Data = bytes.ToArray();
+            message.Size = (Byte)message.Data.Length;
+            if (message.Size > 8)
+                throw new ArgumentException("Данные имеют размер больше допустимого (8 байт)");
+            return message;
+        }
+        public CanMessage CompareSecondMsg()
+        {
+            CanMessage message = new CanMessage();
+            message.Id = Convert.ToUInt32(0x280) + _id;
             var posBytes = BitConverter.GetBytes(_workinPartPosition);
             var ftimeBytes = BitConverter.GetBytes(_fallTime);
             var codeBytes = BitConverter.GetBytes(_state);

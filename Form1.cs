@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 namespace CAN_Simulator
@@ -20,6 +21,10 @@ namespace CAN_Simulator
             device.SetBaud(CanBaudRate.BCI_20K);
             device.Start();
             WorkinPartAR.Init(Convert.ToUInt16(trackBar1.Value),(UInt32)1, CheckState(checkBoxStateErr.Checked, checkBoxStateErr2.Checked));
+            Thread thr = new Thread(()=>wtf(WorkinPartAR.CompareFirstMsg()));
+            thr.IsBackground = true;
+            thr.Start(WorkinPartAR.CompareFirstMsg());
+            
         }
         public StateCode CheckState(bool err, bool errDM)
         {
@@ -28,7 +33,18 @@ namespace CAN_Simulator
             else if (errDM) return StateCode.DriveMgmtDefect;
             else return StateCode.Ok;
         }
-       
+        
+       public void wtf(CanMessage msg1)
+        {
+            while (true)
+            {
+                //label3.Text = WorkinPartAR.ShowMessage(WorkinPartAR.CompareFirstMsg());
+                //label4.Text = WorkinPartAR.ShowMessage(WorkinPartAR.CompareFirstMsg());
+                
+                Thread.Sleep(200);
+            }
+            
+        }
         private void Form1_Load(object sender, EventArgs e)
         {
             textBox1.Text = trackBar1.Value.ToString();
@@ -69,6 +85,7 @@ namespace CAN_Simulator
         private void button2_Click(object sender, EventArgs e)
         {
            MessageBox.Show( WorkinPartAR.ShowMessage(WorkinPartAR.CompareFirstMsg()));
+            
         }
     }
 }

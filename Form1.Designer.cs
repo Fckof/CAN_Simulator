@@ -38,6 +38,8 @@
             this.trackBar1 = new System.Windows.Forms.TrackBar();
             this.panel8 = new System.Windows.Forms.Panel();
             this.button2 = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             this.panel8.SuspendLayout();
@@ -110,6 +112,7 @@
             this.textBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.textBox1.Location = new System.Drawing.Point(32, 321);
             this.textBox1.Name = "textBox1";
+            this.textBox1.ReadOnly = true;
             this.textBox1.Size = new System.Drawing.Size(63, 26);
             this.textBox1.TabIndex = 2;
             // 
@@ -139,6 +142,8 @@
             // 
             // panel8
             // 
+            this.panel8.Controls.Add(this.label4);
+            this.panel8.Controls.Add(this.label3);
             this.panel8.Controls.Add(this.panel2);
             this.panel8.Location = new System.Drawing.Point(1, 1);
             this.panel8.Name = "panel8";
@@ -156,6 +161,26 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label3.Location = new System.Drawing.Point(267, 170);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(67, 24);
+            this.label3.TabIndex = 2;
+            this.label3.Text = "РО АР";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label4.Location = new System.Drawing.Point(897, 170);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(67, 24);
+            this.label4.TabIndex = 3;
+            this.label4.Text = "РО АР";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -170,6 +195,7 @@
             this.panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
             this.panel8.ResumeLayout(false);
+            this.panel8.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -185,6 +211,8 @@
         private System.Windows.Forms.CheckBox checkBoxStateErr;
         private System.Windows.Forms.CheckBox checkBoxStateOk;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label4;
     }
 }
 
