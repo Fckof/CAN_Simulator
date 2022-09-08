@@ -12,19 +12,18 @@ namespace CAN_Simulator
 {
     public partial class Form1 : Form
     {
-        Can device = new Can(1);
+        //Can device = new Can(1);
+        static bool threadCloser = true;
         Params WorkinPartAR = new Params();
         public Form1()
         {
             InitializeComponent();
-            device.Open(CanOpenFlag.Can11);
+           /* device.Open(CanOpenFlag.Can11);
             device.SetBaud(CanBaudRate.BCI_20K);
-            device.Start();
-            WorkinPartAR.Init(Convert.ToUInt16(trackBar1.Value),(UInt32)1, CheckState(checkBoxStateErr.Checked, checkBoxStateErr2.Checked));
-            Thread thr = new Thread(()=>wtf(WorkinPartAR.CompareFirstMsg()));
-            thr.IsBackground = true;
-            thr.Start(WorkinPartAR.CompareFirstMsg());
-            
+            device.Start();*/
+            WorkinPartAR.Init(Convert.ToUInt16(trackBar1.Value),1, CheckState(checkBoxStateErr1.Checked, checkBoxStateErrDM1.Checked),WorkinPartType.AR);
+            Thread thr = new Thread(()=> SendCANMessage(WorkinPartAR));
+            thr.Start();
         }
         public StateCode CheckState(bool err, bool errDM)
         {
@@ -34,17 +33,18 @@ namespace CAN_Simulator
             else return StateCode.Ok;
         }
         
-       public void wtf(CanMessage msg1)
+       public void SendCANMessage(object obj)
         {
-            while (true)
+            Params obj1 = (Params)obj;
+            while (threadCloser)
             {
-                //label3.Text = WorkinPartAR.ShowMessage(WorkinPartAR.CompareFirstMsg());
-                //label4.Text = WorkinPartAR.ShowMessage(WorkinPartAR.CompareFirstMsg());
-                
-                Thread.Sleep(200);
+                label3.Text = obj1.ShowMessage(obj1.CompareFirstMsg(), obj1.CompareSecondMsg());
+
+                Thread.Sleep(100);
             }
             
         }
+
         private void Form1_Load(object sender, EventArgs e)
         {
             textBox1.Text = trackBar1.Value.ToString();
@@ -64,28 +64,55 @@ namespace CAN_Simulator
             switch (status.Text)
             {
                 case "Исправно":
-                    checkBoxStateErr.Checked = false;
-                    checkBoxStateErr2.Checked = false;
-                    checkBoxStateOk.Checked = true;
-                    checkBoxStateOk.Enabled = false;
+                    checkBoxStateErr1.Checked = false;
+                    checkBoxStateErrDM1.Checked = false;
+                    checkBoxStateOk1.Checked = true;
+                    checkBoxStateOk1.Enabled = false;
                     break;
                 case "Неисправно": case "НеисправноУП":
-                    checkBoxStateOk.Enabled = true;
-                    checkBoxStateOk.Checked = false;
+                    checkBoxStateOk1.Enabled = true;
+                    checkBoxStateOk1.Checked = false;
                     break ;
             }
-            if(!(checkBoxStateErr.Checked|| checkBoxStateErr2.Checked|| checkBoxStateOk.Checked))
+            if(!(checkBoxStateErr1.Checked|| checkBoxStateErrDM1.Checked|| checkBoxStateOk1.Checked))
             {
-                checkBoxStateOk.Checked = true;
-                checkBoxStateOk.Enabled = false;
+                checkBoxStateOk1.Checked = true;
+                checkBoxStateOk1.Enabled = false;
             }
-            WorkinPartAR.SetState(CheckState(checkBoxStateErr.Checked, checkBoxStateErr2.Checked));
+            WorkinPartAR.SetState(CheckState(checkBoxStateErr1.Checked, checkBoxStateErrDM1.Checked));
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-           MessageBox.Show( WorkinPartAR.ShowMessage(WorkinPartAR.CompareFirstMsg()));
-            
+            threadCloser = false;
+        }
+
+        private void KSKUSignalsCheck(object sender, EventArgs e)
+        {
+            List<byte> signals = new List<byte>(8);
+            foreach(CheckBox cb in panel1.Controls)
+            {
+
+                signals.Add(cb.Checked ? (byte)1 : (byte)0);
+            }
+            byte bits = 0;
+            for (int i = 0; i < signals.Count; i++)
+            {
+                bits += (byte)(signals[i] * Math.Pow(2, (signals.Count-1)-i));
+            }
+           
+            WorkinPartAR.SetKSKUSignals(bits);
+        }
+
+        private void IOSignalsCheck(object sender, EventArgs e)
+        {
+            if(checkBoxRstAZ1.Checked && checkBoxDeblock1.Checked)
+                WorkinPartAR.SetIOSignals((byte)255);
+            else if(checkBoxRstAZ1.Checked)
+                WorkinPartAR.SetIOSignals((byte)254);
+            else if(checkBoxDeblock1.Checked)
+                WorkinPartAR.SetIOSignals((byte)1);
+            else WorkinPartAR.SetIOSignals(0);
         }
     }
 }
