@@ -21,9 +21,20 @@ namespace CAN_Simulator
            /* device.Open(CanOpenFlag.Can11);
             device.SetBaud(CanBaudRate.BCI_20K);
             device.Start();*/
-            WorkinPartAR.Init(Convert.ToUInt16(trackBar1.Value),1, CheckState(checkBoxStateErr1.Checked, checkBoxStateErrDM1.Checked),WorkinPartType.AR);
+            WorkinPartAR.Init(
+                Convert.ToUInt16(ReverseScrollBar(trackBar1.Value, 
+                trackBar1.Maximum)),
+                1,
+                CheckState(checkBoxStateErr1.Checked, checkBoxStateErrDM1.Checked),
+                WorkinPartType.AR,
+                BitsToByte(WorkinPartAR.BitsArrayBUP)
+                );
             Thread thr = new Thread(()=> SendCANMessage(WorkinPartAR));
             thr.Start();
+        }
+        public int ReverseScrollBar(int value, int maxValue)
+        {
+            return Math.Abs(value - maxValue);
         }
         public StateCode CheckState(bool err, bool errDM)
         {
@@ -39,7 +50,6 @@ namespace CAN_Simulator
             while (threadCloser)
             {
                 label3.Text = obj1.ShowMessage(obj1.CompareFirstMsg(), obj1.CompareSecondMsg());
-
                 Thread.Sleep(100);
             }
             
@@ -47,12 +57,14 @@ namespace CAN_Simulator
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            textBox1.Text = trackBar1.Value.ToString();
+            textBox1.Text = ReverseScrollBar(trackBar1.Value, trackBar1.Maximum).ToString();
         }
 
         private void trackBar1_Scroll(object sender, EventArgs e)
         {
-            WorkinPartAR.ChangePositionValue(Convert.ToUInt16(trackBar1.Value));
+            WorkinPartAR.ChangePositionValue(Convert.ToUInt16(ReverseScrollBar(trackBar1.Value, trackBar1.Maximum)));
+            WorkinPartAR.OutputSignalsBUP();
+            WorkinPartAR.SetBUPSignalsValue(BitsToByte(WorkinPartAR.BitsArrayBUP));
             textBox1.Text= WorkinPartAR.WorkinPartPosition.ToString();
         }
         
@@ -80,6 +92,8 @@ namespace CAN_Simulator
                 checkBoxStateOk1.Enabled = false;
             }
             WorkinPartAR.SetState(CheckState(checkBoxStateErr1.Checked, checkBoxStateErrDM1.Checked));
+            WorkinPartAR.OutputStatusBUP();
+            WorkinPartAR.SetBUPSignalsValue(BitsToByte(WorkinPartAR.BitsArrayBUP));
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -92,18 +106,19 @@ namespace CAN_Simulator
             List<byte> signals = new List<byte>(8);
             foreach(CheckBox cb in panel1.Controls)
             {
-
                 signals.Add(cb.Checked ? (byte)1 : (byte)0);
             }
-            byte bits = 0;
-            for (int i = 0; i < signals.Count; i++)
-            {
-                bits += (byte)(signals[i] * Math.Pow(2, (signals.Count-1)-i));
-            }
-           
-            WorkinPartAR.SetKSKUSignals(bits);
+            WorkinPartAR.SetKSKUSignals(BitsToByte(signals));
         }
-
+        public byte BitsToByte(List<byte> arr)
+        {
+            byte bits = 0;
+            for (int i = 0; i < arr.Count; i++)
+            {
+                bits += (byte)(arr[i] * Math.Pow(2, (arr.Count - 1) - i));
+            }
+            return bits;
+        }
         private void IOSignalsCheck(object sender, EventArgs e)
         {
             if(checkBoxRstAZ1.Checked && checkBoxDeblock1.Checked)
