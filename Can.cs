@@ -57,7 +57,7 @@ namespace CAN_Simulator
 
     private Byte channel;
     private static Boolean initialized = false;
-
+    public string WriteStatus{ get; private set; }
     public Byte Channel { get { return this.channel; } }
 
     public Can(Byte Channel)
@@ -209,11 +209,13 @@ namespace CAN_Simulator
         Array.Copy(tmpData, message.Data, message.Size);
       }
       Int16 result = CiWrite(this.channel, ref message, 1);
-      if (result < 0)
-      {
-        throw CreateException(result);
-      }
-    }
+            if (result < 0)
+            {
+                //throw CreateException(result);
+                WriteStatus = " - Write Error";
+            }
+            else WriteStatus = "";
+        }
 
     public int Count()
     {

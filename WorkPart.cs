@@ -68,41 +68,32 @@ namespace CAN_Simulator
             switch (_DriverType)
             {
                 case WorkinPartType.AR:
-                    if (_WorkinPartPosition == (ushort)OutputSignalsAR.VKV)
-                    
-                        _BitsArrayBUP = new List<byte> { 0, 0, 0, 0, 1, 1, 1, 1 };
-
-                    else if (_WorkinPartPosition >= (ushort)OutputSignalsAR.VKV && _WorkinPartPosition <= (ushort)OutputSignalsAR.PKV30)
-
-                        _BitsArrayBUP = new List<byte> { 1, 0, 0, 0, 1, 1, 1, 1 };
-
-                    else if(_WorkinPartPosition >= (ushort)OutputSignalsAR.PKV30 && _WorkinPartPosition <= (ushort)OutputSignalsAR.PKV50)
-                    
-                        _BitsArrayBUP = new List<byte> { 1, 0, 1, 0, 1, 1, 1, 1 };
-                    
-                    else if(_WorkinPartPosition >= (ushort)OutputSignalsAR.PKV50 && _WorkinPartPosition <= (ushort)OutputSignalsAR.PKV70)
-                    
-                        _BitsArrayBUP = new List<byte> { 1, 0, 1, 1, 1, 1, 1, 1 };
-                    
-                    else if (_WorkinPartPosition >= (ushort)OutputSignalsAR.PKV70 && _WorkinPartPosition < (ushort)OutputSignalsAR.NKV)
-                    
-                        _BitsArrayBUP = new List<byte> { 1, 0, 1, 1, 0, 1, 1, 1 };
-                    
-                    else _BitsArrayBUP = new List<byte> { 1, 0, 1, 1, 0, 0, 1, 1 };
-                    break;
-
+                    _BitsArrayBUP = (_WorkinPartPosition == (ushort)OutputSignalsAR.VKV) ?
+                        new List<byte> { 0, 0, 0, 0, 1, 1, 1, 1 } : 
+                            ((_WorkinPartPosition > (ushort)OutputSignalsAR.VKV && _WorkinPartPosition < (ushort)OutputSignalsAR.PKV30) ?
+                                new List<byte> { 1, 0, 0, 0, 1, 1, 1, 1 } : 
+                                    ((_WorkinPartPosition >= (ushort)OutputSignalsAR.PKV30 && _WorkinPartPosition < (ushort)OutputSignalsAR.PKV50) ?
+                                        new List<byte> { 1, 0, 1, 0, 1, 1, 1, 1 } : 
+                                            ((_WorkinPartPosition >= (ushort)OutputSignalsAR.PKV50 && _WorkinPartPosition < (ushort)OutputSignalsAR.PKV70) ?
+                                                new List<byte> { 1, 0, 1, 1, 1, 1, 1, 1 } : 
+                                                    ((_WorkinPartPosition >= (ushort)OutputSignalsAR.PKV70 && _WorkinPartPosition < (ushort)OutputSignalsAR.NKV) ?
+                                                        new List<byte> { 1, 0, 1, 1, 0, 1, 1, 1 } : new List<byte> { 1, 0, 1, 1, 0, 0, 1, 1 }
+                                                     )
+                                            )
+                                    )
+                            );break;
                 case WorkinPartType.AZ: case WorkinPartType.KR:
-                    if(_WorkinPartPosition== (ushort)OutputSignals.VKV)
-                        _BitsArrayBUP = new List<byte> { 0, 1, 0, 0, 0, 1, 1, 1 };
-                    else if (_WorkinPartPosition > (ushort)OutputSignals.VKV && _WorkinPartPosition < (ushort)OutputSignals.PKV)
-                        _BitsArrayBUP = new List<byte> { 1, 1, 0, 0, 0, 1, 1, 1 };
-                    else if (_WorkinPartPosition > (ushort)OutputSignals.PKV && _WorkinPartPosition < (ushort)OutputSignals.NKV)
-                        _BitsArrayBUP = new List<byte> { 1, 0, 0, 0, 0, 1, 1, 1 };
 
-                    else _BitsArrayBUP = new List<byte> { 1, 0, 0, 0, 0, 0, 1, 1 };
-                    break;
-
+                    _BitsArrayBUP = (_WorkinPartPosition == (ushort)OutputSignals.VKV) ?
+                        new List<byte> { 0, 1, 0, 0, 0, 1, 1, 1 } :
+                            ((_WorkinPartPosition > (ushort)OutputSignals.VKV && _WorkinPartPosition < (ushort)OutputSignals.PKV) ?
+                                new List<byte> { 1, 1, 0, 0, 0, 1, 1, 1 } :
+                                ((_WorkinPartPosition > (ushort)OutputSignals.PKV && _WorkinPartPosition < (ushort)OutputSignals.NKV) ?
+                                    new List<byte> { 1, 0, 0, 0, 0, 1, 1, 1 } : new List<byte> { 1, 0, 0, 0, 0, 0, 1, 1 }
+                                )
+                            );break;
             }
+            OutputStatusBUP();
         }
         public byte BitsToByte(List<byte> arr)
         {

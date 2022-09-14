@@ -16,14 +16,19 @@ namespace CAN_Simulator
         Can device = new Can(0);
         WorkPart AR = new WorkPart();
         WorkPart AZ1 = new WorkPart();
-        
+        WorkPart AZ2 = new WorkPart();
+        WorkPart KR1 = new WorkPart();
+        WorkPart KR2 = new WorkPart();
+        WorkPart KR3 = new WorkPart();
+        WorkPart KR4 = new WorkPart();
+        WorkPart KR5 = new WorkPart();
+        WorkPart KR6 = new WorkPart();
         public Form1()
         {
             InitializeComponent();
             device.Open(CanOpenFlag.Can11);
             device.SetBaud(CanBaudRate.BCI_125K);
             device.Start();
-            
             AR.Init(
                 Convert.ToUInt16(ReverseScrollBar(trackBar1.Value, trackBar1.Maximum)),
                 9,
@@ -36,10 +41,80 @@ namespace CAN_Simulator
                 StateCode.Ok,
                 WorkinPartType.AZ
                 );
-            List<WorkPart> Parts = new List<WorkPart>() { AR, AZ1 };
+            AZ2.Init(
+                Convert.ToUInt16(ReverseScrollBar(trackBar3.Value, trackBar3.Maximum)),
+                2,
+                StateCode.Ok,
+                WorkinPartType.AZ
+                );
+            KR1.Init(
+                Convert.ToUInt16(ReverseScrollBar(trackBar4.Value, trackBar4.Maximum)),
+                3,
+                StateCode.Ok,
+                WorkinPartType.KR
+                );
+            KR2.Init(
+                Convert.ToUInt16(ReverseScrollBar(trackBar5.Value, trackBar5.Maximum)),
+                4,
+                StateCode.Ok,
+                WorkinPartType.KR
+                );
+            KR3.Init(
+                Convert.ToUInt16(ReverseScrollBar(trackBar6.Value, trackBar6.Maximum)),
+                5,
+                StateCode.Ok,
+                WorkinPartType.KR
+                );
+            KR4.Init(
+                Convert.ToUInt16(ReverseScrollBar(trackBar7.Value, trackBar7.Maximum)),
+                6,
+                StateCode.Ok,
+                WorkinPartType.KR
+                );
+            KR5.Init(
+                Convert.ToUInt16(ReverseScrollBar(trackBar8.Value, trackBar8.Maximum)),
+                7,
+                StateCode.Ok,
+                WorkinPartType.KR
+                );
+            KR6.Init(
+                Convert.ToUInt16(ReverseScrollBar(trackBar9.Value, trackBar9.Maximum)),
+                8,
+                StateCode.Ok,
+                WorkinPartType.KR
+                );
 
-            Thread thr = new Thread(() => SendCANMessage(Parts.Cast<object>().ToList()));
+            List<WorkPart> Parts = new List<WorkPart>() { AR, AZ1, AZ2, KR1, KR2, KR3, KR4, KR5, KR6 };
+
+            Thread thr = new Thread(
+                () => SendCANMessage(Parts.Cast<object>().ToList()));
             thr.Start();
+        }
+        public object DefineObject(object tag)
+        {
+            switch (tag)
+            {
+                case "AR":
+                    return AR;
+                case "AZ1":
+                    return AZ1;
+                case "AZ2":
+                    return AZ2;
+                case "KR1":
+                    return KR1;
+                case "KR2":
+                    return KR2;
+                case "KR3":
+                    return KR3;
+                case "KR4":
+                    return KR4;
+                case "KR5":
+                    return KR5;
+                case "KR6":
+                    return KR6;
+                default:
+                    return null;
+            }
         }
         public int ReverseScrollBar(int value, int maxValue)
         {
@@ -55,14 +130,15 @@ namespace CAN_Simulator
         
        public void SendCANMessage(List<object> obj)
         {
-            var obj1 = (WorkPart)obj[0];
-            var obj2 = (WorkPart)obj[1];
+            var samplesList = obj.Cast<WorkPart>().ToList();
             while (threadCloser)
             {
-                label3.Text = obj1.ShowMessage(obj1.CompareFirstMsg(), obj1.CompareSecondMsg());
-                label14.Text=obj2.ShowMessage(obj2.CompareFirstMsg(), obj2.CompareSecondMsg());
-                device.Write(AR.CompareFirstMsg());
-                device.Write(AR.CompareSecondMsg());
+                this.Text = "CAN Simulator KSKU" + device.WriteStatus;
+                foreach (WorkPart part in samplesList)
+                {
+                    device.Write(part.CompareFirstMsg());
+                    device.Write(part.CompareSecondMsg());
+                }
                 Thread.Sleep(100);
             }
             device.Stop();
@@ -73,8 +149,13 @@ namespace CAN_Simulator
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            textBox1.Text = ReverseScrollBar(trackBar1.Value, trackBar1.Maximum).ToString();
-
+            var form = (Form1)sender;
+            var panels = form.Controls[0].Controls;
+            foreach (Panel panel in panels)
+            {
+                WorkPart smp = (WorkPart)DefineObject(panel.Tag);
+                panel.Controls.OfType<TextBox>().First().Text= smp._WorkinPartPosition.ToString();
+            }
         }
 
         private void trackBar_Scroll(object sender, EventArgs e)
@@ -84,21 +165,10 @@ namespace CAN_Simulator
             var textbox = trackbar.Parent.Controls.OfType<TextBox>().First<TextBox>();
             sample.ChangePositionValue(Convert.ToUInt16(ReverseScrollBar(trackbar.Value, trackbar.Maximum)));
             sample.OutputSignalsBUP();
-            sample.SetBUPSignalsValue(AR.BitsToByte(sample._BitsArrayBUP));
+            sample.SetBUPSignalsValue(sample.BitsToByte(sample._BitsArrayBUP));
             textbox.Text= sample._WorkinPartPosition.ToString();
         }
-        public object DefineObject(object tag)
-        {
-            switch (tag)
-            {
-                case "AR":
-                    return AR;
-                case "AZ1":
-                    return AZ1;
-                default:
-                    return null;
-            }
-        }
+        
         
 
         private void CheckBoxStateManager(object sender, EventArgs e)
@@ -117,7 +187,14 @@ namespace CAN_Simulator
             WorkPart sample = (WorkPart)DefineObject(checkbox.Parent.Parent.Tag);
             List<byte> signals = new List<byte>(8);
             var checkboxList = checkbox.Parent.Controls.Cast<CheckBox>().ToList();
-            if(checkbox.Parent.Controls.Count<8)
+            for (int i = 0; i < checkboxList.Count; i++)
+            {
+                if(i==3 && checkboxList.Count<8)
+                {
+                    signals.Add((byte)0); signals.Add((byte)0); signals.Add((byte)0);
+                }
+                signals.Add(checkboxList[i].Checked ? (byte)1 : (byte)0);
+            }
             sample.SetKSKUSignals(sample.BitsToByte(signals));
         }
         
